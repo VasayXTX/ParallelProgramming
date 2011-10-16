@@ -33,11 +33,10 @@ int main(int argc, char *argv[])
 void *th_func_first(void *arg)
 {
   unsigned int i;
-  double tmp;
 
   printf(TH_TMPL_CREATION, TH_FIRST);
   printf(TH_TMPL_WORK, TH_FIRST);
-  for (i = 0; i < ITER_COUNT; ++i) tmp = i * sqrt(SQRT_VAL);
+  for (i = 0; i < ITER_COUNT; ++i) i * sqrt(SQRT_VAL);
 
   sprintf(buffer, TH_TMPL_STOP, TH_FIRST);
   pthread_exit(buffer);

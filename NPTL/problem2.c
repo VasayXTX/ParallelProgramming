@@ -41,6 +41,7 @@ void *th_func_first(void *arg)
     counter = i;
     printf("TH1: %i\n", counter);
   }
+  pthread_exit(NULL);
 }
 
 void *th_func_second(void *arg)
@@ -53,5 +54,6 @@ void *th_func_second(void *arg)
     check_res(sem_post(&bin_sem), SEM_ERR_POST, NULL);
     while (counter % 2) sleep(1);
   }
+  pthread_exit(NULL);
 }
 

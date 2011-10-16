@@ -19,7 +19,7 @@ problem3: problem3.o
 	$(CC) $(CFLAGS) problem3.o -o problem3 $(LFLAGS)
 
 .c.o: pthread_checker.h
-	$(CC) -c $<
+	$(CC) $(CFLAGS) -c $<
 
 clean:
 	-rm *.o problem1 problem2 problem3
