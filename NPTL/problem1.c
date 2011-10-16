@@ -13,7 +13,7 @@ void *th_func_second(void *arg);
 
 char buffer[MSG_BUF_SIZE];
 
-int main(int argc, char *argv)
+int main(int argc, char *argv[])
 {
   pthread_t th_first, th_second;
   void *th_second_res;

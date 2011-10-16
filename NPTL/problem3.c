@@ -14,7 +14,7 @@ BOOL is_change;
 
 sem_t bin_sem;
 
-int main(int argc, char *argv)
+int main(int argc, char *argv[])
 {
   pthread_t th_first, th_second, th_third;
 

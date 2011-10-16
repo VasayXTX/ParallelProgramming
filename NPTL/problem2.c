@@ -12,7 +12,7 @@ int counter;
 
 sem_t bin_sem;
 
-int main(int argc, char *argv)
+int main(int argc, char *argv[])
 {
   pthread_t th_first, th_second;
 
