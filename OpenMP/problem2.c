@@ -13,29 +13,17 @@
 #define TRUE 1
 #define FALSE 0
 
-/*#define IS_RANDOMIZE*/
+void run_sort(int *arr, size_t n, void (*f)(int *, size_t), char *title);
 
 int main(int argc, char *argv[])
 {
   int i;
   size_t n;
-  struct timeval t_begin, t_end;
-  float t_diff;
   int *arr;
   FILE *f_in, *f_out;
 
   BOOL is_file = FALSE;
   BOOL is_mt = FALSE;
-
-  /*argc = 4;
-  #ifndef IS_RANDOMIZE
-    argv[1] = "tests/test_2.in";
-    argv[2] = "tests/test_2.out";
-  #else
-    argv[1] = "-r";
-    argv[2] = "100";
-  #endif
-  argv[3] = "-m";*/
 
   if (argc < 3) return EXIT_FAILURE;
 
@@ -70,14 +58,23 @@ int main(int argc, char *argv[])
     is_file = TRUE;
   }
 
-  is_mt = argc >= 4 && !strcmp(argv[3], "-m") ? TRUE : FALSE;
-  
-  gettimeofday(&t_begin, NULL);
-  quicksort(arr, n, is_mt);
-  gettimeofday(&t_end, NULL);
-
-  t_diff = t_end.tv_sec - t_begin.tv_sec + 0.000001 * (t_end.tv_usec - t_begin.tv_usec);
-  printf("Work time of sorting at %f seconds\n", t_diff);
+  if (argc < 4)
+    run_qsort(arr, n, sqsort, "Single thread");
+  else if (!strcmp(argv[3], "-ms"))
+    run_qsort(arr, n, pqsort_sections, "Multi threads using nested parallel regions");
+  else if (!strcmp(argv[3], "-mt"))
+    run_qsort(arr, n, pqsort_tasks, "Multi threads using tasks from OpenMP 3.0");
+  else if (!strcmp(argv[3], "-a"))
+  {
+    int *arr_foo = (int *)malloc(n * sizeof(int));
+    memcpy(arr_foo, arr, n * sizeof(int));
+    int *arr_bar = (int *)malloc(n * sizeof(int));
+    memcpy(arr_bar, arr, n * sizeof(int));
+    run_qsort(arr, n, sqsort, "Single thread");
+    run_qsort(arr_foo, n, pqsort_sections, "Multi threads using nested parallel regions");
+    run_qsort(arr_bar, n, pqsort_tasks, "Multi threads using tasks from OpenMP 3.0");
+  }
+  else return EXIT_FAILURE;
 
   if (is_file)
   {
@@ -92,5 +89,18 @@ int main(int argc, char *argv[])
   free(arr);
 
   return EXIT_SUCCESS;
+}
+
+void run_qsort(int *arr, size_t n, void (*f)(int *, size_t), char *title)
+{
+  struct timeval t_begin, t_end;
+  float t_diff;
+
+  printf("%s\n", title);
+  gettimeofday(&t_begin, NULL);
+  (*f)(arr, n);
+  gettimeofday(&t_end, NULL);
+  t_diff = t_end.tv_sec - t_begin.tv_sec + 0.000001 * (t_end.tv_usec - t_begin.tv_usec);
+  printf("Work time of sorting at %f seconds\n", t_diff);
 }
 

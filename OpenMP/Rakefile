@@ -103,7 +103,7 @@ task :t, :program, :dir do |t, args|
     name_f_et = "#{args[:dir]}/#{name_file}.#{sf[:etalon]}"
 
     res = true
-    ['', '-m'].each do |k|
+    ['', '-ms', '-mt'].each do |k|
       `./#{args[:program]} #{name_f_in} #{name_f_out} #{k}`
       res &&= `diff #{name_f_out} #{name_f_et}`.empty?
     end

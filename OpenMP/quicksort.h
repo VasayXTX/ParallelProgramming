@@ -3,6 +3,8 @@
 
 #include <stdlib.h>
 
-void quicksort(int *arr, size_t size, int is_mt);
+void sqsort(int *arr, size_t size);
+void pqsort_sections(int *arr, size_t size);
+void pqsort_tasks(int *arr, size_t size);
 
 #endif

@@ -19,8 +19,6 @@ int median(int *a, int l, int h)
   return (a[l] < a[h]) ? _mid(a, l, h, i) : _mid(a, h, l, i);
 }
 
-/***************** QSort (implementation from Korman) *****************/
-
 int partition(int *arr, int low, int high)
 {
   int j, x;
@@ -40,16 +38,18 @@ int partition(int *arr, int low, int high)
   return i + 1;
 }
 
-void _quicksort(int *arr, int low, int high)
+/***************** QSort (Single thread || Using a Nested Rapallel Region) *****************/
+
+void __qsort(int *arr, int low, int high)
 {
   int q;
   if (low >= high) return;
   q = partition(arr, low, high);
-  _quicksort(arr, low, q - 1);
-  _quicksort(arr, q + 1, high);
+  __qsort(arr, low, q - 1);
+  __qsort(arr, q + 1, high);
 }
 
-void quicksort(int *arr, size_t size, int is_mt)
+void _qsort(int *arr, size_t size, int is_mt)
 {
   int q;
   if (size <= 1 ) return;
@@ -58,10 +58,44 @@ void quicksort(int *arr, size_t size, int is_mt)
   #pragma omp parallel sections if (is_mt) num_threads(2)
   {
     #pragma omp section
-    _quicksort(arr, 0, q - 1);
+    __qsort(arr, 0, q - 1);
     
     #pragma omp section
-    _quicksort(arr, q + 1, size - 1);
+    __qsort(arr, q + 1, size - 1);
+  }
+}
+
+void sqsort(int *arr, size_t n)
+{
+  _qsort(arr, n, 0);
+}
+
+void pqsort_sections(int *arr, size_t n)
+{
+  _qsort(arr, n, 1);
+}
+
+/***************** QSort (Using a Task from OpenMP 3.0) *****************/
+
+void _pqsort_tasks(int *arr, int low, int high)
+{
+  int q;
+  if (low >= high) return;
+  q = partition(arr, low, high);
+
+  #pragma omp task
+  _pqsort_tasks(arr, low, q - 1);
+
+  #pragma omp task
+  _pqsort_tasks(arr, q + 1, high);
+}
+
+void pqsort_tasks(int *arr, size_t size)
+{
+  #pragma omp parallel
+  {
+    #pragma omp single nowait
+    _pqsort_tasks(arr, 0, size - 1);
   }
 }
 
