@@ -1,0 +1,113 @@
+#coding: utf-8
+
+RAND_VAL_RANGE = 0..10 ** 6
+MAX_POW = 5
+
+T_DIR = 'tests'
+
+class Generator
+  def initialize(name_dir)
+    @name_dir = name_dir
+    @tests = []
+  end
+
+  def add_tests(test_in, test_et)
+    @tests.push :input => test_in, :etalon =>  test_et
+  end
+
+  def generate
+    Dir.mkdir(@name_dir) unless Dir.exist? @name_dir
+    @tests.each_with_index do |test, i|
+      [[test[:input], 'in'], [test[:etalon], 'et']].each do |foo|
+        File.open(File.join(@name_dir, "test_#{i}.#{foo[1]}"), 'w') do |f|
+          f.puts foo[0].to_s
+          f.puts "\n"
+        end
+      end
+    end 
+  end
+end
+
+class Array
+  def to_s; "#{self.join(' ')} "; end
+end
+
+class TestSortIn
+  def initialize(arr); @arr = arr; end
+
+  def to_s
+    "#{@arr.size.to_s}\n#{@arr.to_s}"
+  end
+end
+
+#Function to make input and etalon data for sequenсe
+def make_test_seq(el_count, p_in, p_et)
+  a = Array.new(el_count) { |i| p_in.call(i) }
+  [TestSortIn.new(a), p_et.call(a)]
+end
+
+def add_tests_sort(gen)
+  r = Random.new
+  
+  #Test1, Test2, Test3
+  [1, 10 ** 2, 10 ** MAX_POW].each do |c|
+    gen.add_tests *make_test_seq(
+      c,
+      Proc.new { |i| i },
+      Proc.new { |a| a }
+    )
+  end
+
+  #Test4, Test5
+  [10 ** 2, 10 ** MAX_POW].each do |c|
+    gen.add_tests *make_test_seq(
+      c,
+      Proc.new { |i| c - i - 1 },
+      Proc.new { |a| a.reverse }
+    )
+  end
+
+  #Test6, Test7
+  [10 ** 2, 10 ** MAX_POW].each do |c| 
+    gen.add_tests *make_test_seq(
+      c,
+      p_in = Proc.new { |i| r.rand(RAND_VAL_RANGE) },
+      p_et = Proc.new { |a| a.sort }
+    )
+  end
+end
+
+task :g, :dir do |t, args|
+  args.with_defaults :dir => T_DIR
+
+  gen = Generator.new args[:dir]
+  add_tests_sort gen
+  gen.generate
+end
+
+task :t, :program, :dir do |t, args|
+  args.with_defaults :program => 'problem', :dir => T_DIR
+
+  sf = {
+    :in => 'in',
+    :out => 'out',
+    :etalon => 'et'
+  }
+
+  File.delete *Dir["#{args[:dir]}/*.#{sf[:out]}"]
+  files_in = Dir["#{args[:dir]}/*.#{sf[:in]}"].map { |name_file| File.basename name_file, ".#{sf[:in]}"}
+  files_in.sort!
+  files_in.each_with_index do |name_file, i|
+    name_f_in = "#{args[:dir]}/#{name_file}.#{sf[:in]}"
+    name_f_out = "#{args[:dir]}/#{name_file}.#{sf[:out]}"
+    name_f_et = "#{args[:dir]}/#{name_file}.#{sf[:etalon]}"
+
+    res = true
+    ['', '-m'].each do |k|
+      `./#{args[:program]} #{name_f_in} #{name_f_out} #{k}`
+      res &&= `diff #{name_f_out} #{name_f_et}`.empty?
+    end
+    puts "TEST#{i}(#{name_file}.#{sf[:in]}): #{if res then 'OK' else 'ERROR' end}"
+  end
+end
+

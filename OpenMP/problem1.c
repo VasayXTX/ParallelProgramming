@@ -6,6 +6,8 @@
 #include <sys/time.h>
 #include <malloc.h>
 
+#define IS_DBG
+
 int main (int argc, char *argv[])
 {
   int i, j, k;
@@ -13,8 +15,14 @@ int main (int argc, char *argv[])
   struct timeval timev1, timev2;
   float time_seconds;
 
-  int N = atoi (argv[1]);
-  int P = atoi (argv[2]);
+  #ifndef IS_DBG
+    int N = atoi(argv[1]);
+    int P = atoi(argv[2]);
+  #else
+    int N = pow(10, 3);
+    int P = 4;
+  #endif
+
   printf ( "N=%d   P=%d\n", N, P );
 
   a = (float *)malloc(N * N * sizeof(float));
