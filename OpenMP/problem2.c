@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
 #include <sys/time.h>
@@ -23,7 +24,6 @@ int main(int argc, char *argv[])
   FILE *f_in, *f_out;
 
   BOOL is_file = FALSE;
-  BOOL is_mt = FALSE;
 
   if (argc < 3) return EXIT_FAILURE;
 
@@ -73,6 +73,7 @@ int main(int argc, char *argv[])
     run_qsort(arr, n, sqsort, "Single thread");
     run_qsort(arr_foo, n, pqsort_sections, "Multi threads using nested parallel regions");
     run_qsort(arr_bar, n, pqsort_tasks, "Multi threads using tasks from OpenMP 3.0");
+    free(arr_bar); free(arr_foo);
   }
   else return EXIT_FAILURE;
 
