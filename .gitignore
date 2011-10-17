@@ -1,0 +1,8 @@
+#Vim
+*.swp
+*.swo
+
+#Tests
+*.in
+*.out
+*.et
