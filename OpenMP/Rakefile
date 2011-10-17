@@ -85,8 +85,8 @@ task :g, :dir do |t, args|
   gen.generate
 end
 
-task :t, :program, :dir do |t, args|
-  args.with_defaults :program => 'problem', :dir => T_DIR
+task :t, :program, :key, :dir do |t, args|
+  args.with_defaults :program => 'problem', :dir => T_DIR, :key => ''
 
   sf = {
     :in => 'in',
@@ -102,11 +102,8 @@ task :t, :program, :dir do |t, args|
     name_f_out = "#{args[:dir]}/#{name_file}.#{sf[:out]}"
     name_f_et = "#{args[:dir]}/#{name_file}.#{sf[:etalon]}"
 
-    res = true
-    ['', '-ms', '-mt'].each do |k|
-      `./#{args[:program]} #{name_f_in} #{name_f_out} #{k}`
-      res &&= `diff #{name_f_out} #{name_f_et}`.empty?
-    end
+    a = `./#{args[:program]} #{name_f_in} #{name_f_out} #{args[:key]}`
+    res = `diff #{name_f_out} #{name_f_et}`.empty?
     puts "TEST#{i}(#{name_file}.#{sf[:in]}): #{if res then 'OK' else 'ERROR' end}"
   end
 end
