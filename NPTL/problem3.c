@@ -46,7 +46,7 @@ void *th_func_first(void *arg)
   {
     check_res(sem_wait(&bin_sem), SEM_ERR_WAIT, NULL);
     counter = i;
-    printf("TH1: %i\n", counter);
+    /*printf("TH1: %i\n", counter);*/
     is_change = TRUE;
   }
   pthread_exit(NULL);
@@ -58,7 +58,7 @@ void *th_func_second(void *arg)
   for (i = 1; i <= LIM; i += 2)
   {
     counter = i;
-    printf("TH2: %i\n", counter);
+    /*printf("TH2: %i\n", counter);*/
     is_change = TRUE;
     while (is_change) sleep(1);
     check_res(sem_post(&bin_sem), SEM_ERR_POST, NULL);

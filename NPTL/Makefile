@@ -22,4 +22,6 @@ problem3: problem3.o
 	$(CC) $(CFLAGS) -c $<
 
 clean:
-	-rm *.o problem1 problem2 problem3
+	rm -rf *.o problem1 problem2 problem3
+	@echo Cleaning copmplete
+

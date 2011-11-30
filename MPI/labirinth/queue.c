@@ -8,6 +8,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "queue.h"
 
@@ -48,7 +49,8 @@ void q_push(queue *q, void *data)
     foo->prev = NULL;
     q->head = q->head->prev = foo;
   }
-  foo->data = data;
+  foo->data = (void *)malloc(sizeof(q->size_el));
+  memcpy(foo->data, data, q->size_el);
   ++q->size;
 }
 
@@ -63,6 +65,7 @@ void q_pop(queue *q)
   else q->tail->prev->next = NULL;
   node *foo = q->tail;
   q->tail = q->tail->prev;
+  free(foo->data);
   free(foo);
   --q->size;
 }

@@ -24,17 +24,17 @@ struct Block
 
 /*Params of the matrix*/
 
-#define N (size_t)pow(10, 2)
+#define N (size_t)pow(10, 3)
 #define NN N * N
-#define M 2
-#define K 3
+#define M 1
+#define K 1
 
 #define T int
 #define T_MPI MPI_INT
 
 #define VAL_A 1
 #define VAL_B 2
-#define VAL_C 200
+#define VAL_C 2000
 
 /*Implementation*/
 

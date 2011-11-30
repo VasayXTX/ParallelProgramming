@@ -29,6 +29,7 @@ void test(BOOL cond)
 int main(int argc, char *argv[])
 {
   size_t s = sizeof(int);
+  int foo;
   {
     /*#Test_0*/
     queue q; q_init(&q, s);
@@ -37,55 +38,57 @@ int main(int argc, char *argv[])
   {
     /*#Test_1*/
     queue q; q_init(&q, s);
-    q_push(&q, (void *)1);
-    test(q_size(&q) == 1 && !q_is_empty(&q));
+    foo = 1; q_push(&q, &foo);
+    test(q_size(&q) == 1 && !q_is_empty(&q) && *(int *)q_front(&q) == 1);
   }
   {
     /*#Test_2*/
     queue q; q_init(&q, s);
-    q_push(&q, (void *)2);
-    q_push(&q, (void *)1);
+    foo = 2; q_push(&q, &foo);
+    foo = 1; q_push(&q, &foo);
     test(
         q_size(&q) == 2 && 
-        q_front(&q) == (void *)1 && 
-        q_back(&q) == (void *)2);
+        *(int *)q_front(&q) == 1 && 
+        *(int *)q_back(&q) == 2);
   }
   {
     /*#Test_3*/
     queue q; q_init(&q, s);
-    q_push(&q, (void *)3);
-    q_push(&q, (void *)2);
-    q_push(&q, (void *)1);
+
+    foo = 3; q_push(&q, &foo);
+    foo = 2; q_push(&q, &foo);
+    foo = 1; q_push(&q, &foo);
 
     q_pop(&q);
-    BOOL foo = q_front(&q) == (void *)1 && q_back(&q) == (void *)2;
+    BOOL bar = *(int *)q_front(&q) == 1 && *(int *)q_back(&q) == 2;
 
     q_pop(&q);
-    BOOL bar = q_front(&q) == (void *)1 && q_back(&q) == (void *)1;
+    bar &= *(int *)q_front(&q) == 1 && *(int *)q_back(&q) == 1;
 
     q_pop(&q);
     test(
-        foo &&
         bar &&
         q_is_empty(&q));
   }
   {
     /*#Test_4*/
     queue q; q_init(&q, s);
-    BOOL foo = TRUE;
-
-    for (uint i = 0; i < N; ++i)
-      q_push(&q, (void *)i);
+    BOOL bar = TRUE;
 
     for (uint i = 0; i < N; ++i)
     {
-      foo &= q_back(&q) == (void *)i;
-      if (!foo) break;
+      foo = i; q_push(&q, &foo);
+    }
+
+    for (uint i = 0; i < N; ++i)
+    {
+      bar &= *(int *)q_back(&q) == i;
+      if (!bar) break;
       q_pop(&q);
     }
 
     test(
-        foo &
+        bar&
         q_is_empty(&q));
   }
 
